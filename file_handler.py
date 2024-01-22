@@ -1,7 +1,7 @@
 import csv
 import json
 import pickle
-
+import os
 
 class FileHandler:
     def __init__(self, input_file, output_file, changes_in_file):
@@ -11,6 +11,10 @@ class FileHandler:
         self.work = []
 
     def read_data(self):
+        if not os.path.exists(self.input_file):
+            print(f"Plik nie istnieje: {self.input_file}")
+            return
+
         if self.input_file.endswith('.csv'):
             with open(self.input_file, mode='r') as file:
                 reader = csv.reader(file)
@@ -27,6 +31,10 @@ class FileHandler:
     def change_data_in_our_work(self):
         for incoming_change in self.changes_in_file:
             data_to_change = incoming_change.split(",")
+            if len(data_to_change) != 3 or not data_to_change[0].isnumeric() or not data_to_change[1].isnumeric():
+                print("Nieprawidłowy format danych wejściowych.")
+                continue
+
             x_value = int(data_to_change[0])
             y_value = int(data_to_change[1])
             new_value = data_to_change[2]
@@ -38,6 +46,10 @@ class FileHandler:
             self.work[x_value][y_value] = new_value
 
     def write_data(self):
+        if not os.path.exists(self.output_file):
+            print(f"Plik wyjściowy nie istnieje: {self.output_file}")
+            return
+
         if self.output_file.endswith('.csv'):
             with open(self.output_file, mode='w', newline='') as file:
                 writer = csv.writer(file)
